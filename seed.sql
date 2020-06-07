@@ -1,7 +1,7 @@
-INSERT INTO department(name) VALUES("Sales");
-INSERT INTO department(name) VALUES("Legal");
-INSERT INTO department(name) VALUES("Marketing");
-INSERT INTO department(name) VALUES("Software");
+INSERT INTO department(department_name) VALUES("Sales");
+INSERT INTO department(department_name) VALUES("Legal");
+INSERT INTO department(department_name) VALUES("Marketing");
+INSERT INTO department(department_name) VALUES("Software");
 
 INSERT INTO role(title, salary, department_id) VALUES("Manager", 100000, 1);
 

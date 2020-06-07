@@ -3,17 +3,109 @@ var inquirer = require("inquirer");
 
 var connection = mysql.createConnection({
     host: "localhost",
-  
-    // Your port; if not 3306
     port: 3306,
-  
-    // Your username
     user: "root",
-  
-    // Your password
     password: "password",
-    database: "schemaDB"
-  });
+    database: "employeesDB"
+});
 
-  
+connection.connect();
 
+function getInfo(query) {
+
+    connection.query(query, function (error, results) {
+        if (error) throw error;
+        console.table(results);
+        runSearch();
+        // results.forEach(element => {
+        //     console.log(element)
+        // });
+    });
+
+}
+
+getInfo("SELECT * FROM department");
+getInfo("SELECT * FROM role");
+getInfo("SELECT * FROM employee");
+
+connection.end();
+
+function runSearch() {
+    inquirer
+        .prompt({
+            name: "action",
+            type: "list",
+            message: "What would you like to do?",
+            choices: [
+                "View All Employees",
+                "View All Roles",
+                "View All Departments",
+                "Add Employee",
+                "Add Role",
+                "Add Department",
+                "Update Employee Role",
+                "Exit"
+            ]
+        })
+        .then(function (answer) {
+            switch (answer.action) {
+                case "View All Employees":
+                    viwAllEmployees();
+                    break;
+
+                case "View All Roles":
+                    viwAllRoles();
+                    break;
+
+                case "View All Departments":
+                    viwAllDepartments();
+                    break;
+
+                case "Add Employee":
+                    addEmployee();
+                    break;
+
+                case "Add Role":
+                    addRole();
+                    break;
+
+                case "Add Department":
+                    addDepartment();
+                    break;
+                  
+                case "Update Employee Role":
+                    updateEmployeeRole();
+                    break;    
+
+                case "Exit":
+                    connection.end();
+                    break;
+            }
+        })
+}
+
+function viwAllEmployees() {
+    return this.connection.query(
+        "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;"
+      );
+}
+
+function viwAllRoles() {
+    return this.connection.query(
+        "SELECT "
+    )
+}
+
+function viwAllDepartments() {
+
+}
+
+function addEmployee() {}
+
+function addRole() {}
+
+function addDepartment() {}
+
+function updateEmployeeRole() {
+    
+}

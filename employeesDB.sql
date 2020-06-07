@@ -1,21 +1,21 @@
-DROP DATABASE IF EXISTS schemaDB;
+DROP DATABASE IF EXISTS employeesDB;
 
-CREATE database schemaDB;
+CREATE database employeesDB;
 
-USE schemaDB;
+USE employeesDB;
 
 CREATE TABLE department (
   id INT AUTO_INCREMENT NOT NULL,
-  name VARCHAR(30) NULL,
+  department_name VARCHAR(30) NULL,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE role (
   id INT AUTO_INCREMENT NOT NULL,
   title VARCHAR(30) NULL,
-  salary DECIMAL(12,4) NULL,
+  salary DECIMAL(12,2) NULL,
   department_id INT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
   FOREIGN KEY (department_id) REFERENCES department(id)
 );
 
@@ -25,7 +25,7 @@ CREATE TABLE employee (
   last_name VARCHAR(30) NULL,
   role_id INT,
   manager_id INT NULL,
-  PRIMARY KEY (id)
-  FOREIGN KEY (role_id) REFERENCES role(id)
+  PRIMARY KEY (id),
+  FOREIGN KEY (role_id) REFERENCES role(id),
   FOREIGN KEY (manager_id) REFERENCES employee(id)
 );

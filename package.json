@@ -19,7 +19,8 @@
   },
   "homepage": "https://github.com/Anverch/MySQL_Employee_Tracker#readme",
   "dependencies": {
-    "inquirer": "^0.2.3",
+    "inquirer": "^7.1.0",
+    "lodash": ">=4.17.12",
     "mysql": "^2.18.1"
   }
 }
