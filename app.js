@@ -123,24 +123,24 @@ function addEmployee() {
         }
         const roleChoices = roles.map(r => {
             return {
-                title: r.title,
-                id: r.id
+                name: r.title,
+                value: r.id
             }
         })
-        connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.id FROM employee LEFT JOIN role on employee.role_id = role.id WHERE role.title = \"Manager\"", function (errTwo, managers) {
+        connection.query("SELECT employee.id AS employee_id, employee.first_name, employee.last_name, role.title, role.id AS role_id FROM employee LEFT JOIN role on employee.role_id = role.id WHERE role.title = \"Manager\"", function (errTwo, managers) {
             if (errTwo) {
                 throw errTwo
             }
             const managerChoices = managers.map(m => {
                 return {
                     name: m.first_name,
-                    id: m.id
+                    value: m.employee_id
                 }
             })
 
             managerChoices.push({
                 name: "None",
-                id: null
+                value: null
             });
 
             inquirer
@@ -159,16 +159,16 @@ function addEmployee() {
                         name: "role",
                         type: "list",
                         message: "What is the role of the employee?",
-                        choices: roleChoices.map(r => r.title)
+                        choices: roleChoices
                     },
                     {
                         name: "manager",
                         type: "list",
                         message: "Who is the employee manager?",
-                        choices: managerChoices.map(m => m.name)
+                        choices: managerChoices
                     }
                 ]).then((answer) => {
-                    connection.query(`INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES("${answer.first_name}", "${answer.last_name}", ${roleChoices.find(r=>r.title===answer.role).id}, ${managerChoices.find(m=> m.name === answer.manager).id})`, function (err, res) {
+                    connection.query(`INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES("${answer.first_name}", "${answer.last_name}", ${answer.role}, ${answer.manager})`, function (err, res) {
                         if (err) {
                             throw err
                         }
