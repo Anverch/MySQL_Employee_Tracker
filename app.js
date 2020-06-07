@@ -122,17 +122,26 @@ function addEmployee() {
             throw err
         }
         const roleChoices = roles.map(r => {
-            return {title: r.title, id: r.id}
+            return {
+                title: r.title,
+                id: r.id
+            }
         })
-        connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.id FROM employee LEFT JOIN role on employee.role_id = role.id  WHERE role.title = \"Manager\"", function (errTwo, managers) {
+        connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.id FROM employee LEFT JOIN role on employee.role_id = role.id WHERE role.title = \"Manager\"", function (errTwo, managers) {
             if (errTwo) {
                 throw errTwo
             }
             const managerChoices = managers.map(m => {
-                return {name: m.first_name, id: m.id}
+                return {
+                    name: m.first_name,
+                    id: m.id
+                }
             })
 
-            managerChoices.push({name: "None", id: null});
+            managerChoices.push({
+                name: "None",
+                id: null
+            });
 
             inquirer
                 .prompt([{
@@ -150,33 +159,65 @@ function addEmployee() {
                         name: "role",
                         type: "list",
                         message: "What is the role of the employee?",
-                        choices: roleChoices.map(r=> r.title)
+                        choices: roleChoices.map(r => r.title)
                     },
                     {
                         name: "manager",
                         type: "list",
                         message: "Who is the employee manager?",
-                        choices: managerChoices.map(m=> m.name)
+                        choices: managerChoices.map(m => m.name)
                     }
                 ]).then((answer) => {
-                    connection.query(`INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES("${answer.first_name}", "${answer.last_name}", ${roleChoices.find(r=>r.title===answer.role).id}, ${managerChoices.find(m=> m.name === answer.manager).id})` , function(err, res){
-                        if(err){
+                    connection.query(`INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES("${answer.first_name}", "${answer.last_name}", ${roleChoices.find(r=>r.title===answer.role).id}, ${managerChoices.find(m=> m.name === answer.manager).id})`, function (err, res) {
+                        if (err) {
                             throw err
                         }
                         runSearch();
-                        viwAllEmployees();
                     })
                 })
         })
     })
-
-
 }
 
-function addRole() {}
+function addRole() {
+    connection.query("SELECT * FROM department", function (err, department) {
+        if (err) {
+            throw err
+        }
+        const departmentChoices = department.map(d => {
+            return {
+                name: d.department_name,
+                value: d.id
+            }
+        })
+        inquirer
+            .prompt([{
+                    name: "role",
+                    type: "input",
+                    message: "What is the role?",
+                },
+                {
+                    name: "department",
+                    type: "list",
+                    message: "Add to department!",
+                    choices: departmentChoices
+                },
+                {
+                    name: "salary",
+                    type: "number",
+                    message: "What is the salary?",
+                }
+            ]).then((answer) => {
+                connection.query(`INSERT INTO role (title, department_id, salary) VALUES ("${answer.role}", "${answer.department}", "${answer.salary}")`, function(err, res) {
+                    if (err) {
+                        throw err
+                    }
+                    runSearch();
+                })
+            })
+    });
+}
 
 function addDepartment() {}
 
-function updateEmployeeRole() {
-
-}
+function updateEmployeeRole() {}
