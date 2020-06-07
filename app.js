@@ -17,18 +17,18 @@ function getInfo(query) {
         if (error) throw error;
         console.table(results);
         // results.forEach(element => {
-            //     console.log(element)
-            // });
-        });
-        
-}
-    
-    // getInfo("SELECT * FROM department");
-    // getInfo("SELECT * FROM role");
-    // getInfo("SELECT * FROM employee");
-    
+        //     console.log(element)
+        // });
+    });
 
-    runSearch();
+}
+
+// getInfo("SELECT * FROM department");
+// getInfo("SELECT * FROM role");
+// getInfo("SELECT * FROM employee");
+
+
+runSearch();
 
 function runSearch() {
     var exit = false
@@ -73,26 +73,26 @@ function runSearch() {
                 case "Add Department":
                     addDepartment();
                     break;
-                  
+
                 case "Update Employee Role":
                     updateEmployeeRole();
-                    break;    
+                    break;
 
                 case "Exit":
                     exit = true;
                     connection.end();
                     break;
-                }
-            })
+            }
+        })
 }
 
 //  Connection function for all View Data requests 
-function viewData(query){
+function executeQueryNoResult(query) {
     connection.query(query, function (err, res) {
-        if (err){
+        if (err) {
             throw err
-        } 
-        console.table(res); 
+        }
+        console.table(res);
         runSearch()
         return
     })
@@ -100,24 +100,77 @@ function viewData(query){
 
 function viwAllEmployees() {
     var query = "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department_name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;"
-    
-    viewData(query)
+
+    executeQueryNoResult(query)
 }
 
 function viwAllRoles() {
     var query = "SELECT * FROM role"
-    
-    viewData(query)
+
+    executeQueryNoResult(query)
 }
 
 function viwAllDepartments() {
     var query = "SELECT * FROM department"
 
-    viewData(query)
+    executeQueryNoResult(query)
 }
 
 function addEmployee() {
-    
+    connection.query("SELECT * FROM role", function (err, roles) {
+        if (err) {
+            throw err
+        }
+        const roleChoices = roles.map(r => {
+            return {title: r.title, id: r.id}
+        })
+        connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.id FROM employee LEFT JOIN role on employee.role_id = role.id  WHERE role.title = \"Manager\"", function (errTwo, managers) {
+            if (errTwo) {
+                throw errTwo
+            }
+            const managerChoices = managers.map(m => {
+                return {name: m.first_name, id: m.id}
+            })
+
+            managerChoices.push({name: "None", id: null});
+
+            inquirer
+                .prompt([{
+                        name: "first_name",
+                        type: "input",
+                        message: "What is the employees first name?"
+                    },
+                    {
+                        name: "last_name",
+                        type: "input",
+                        message: "What is the employees last name?"
+
+                    },
+                    {
+                        name: "role",
+                        type: "list",
+                        message: "What is the role of the employee?",
+                        choices: roleChoices.map(r=> r.title)
+                    },
+                    {
+                        name: "manager",
+                        type: "list",
+                        message: "Who is the employee manager?",
+                        choices: managerChoices.map(m=> m.name)
+                    }
+                ]).then((answer) => {
+                    connection.query(`INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES("${answer.first_name}", "${answer.last_name}", ${roleChoices.find(r=>r.title===answer.role).id}, ${managerChoices.find(m=> m.name === answer.manager).id})` , function(err, res){
+                        if(err){
+                            throw err
+                        }
+                        runSearch();
+                        viwAllEmployees();
+                    })
+                })
+        })
+    })
+
+
 }
 
 function addRole() {}
