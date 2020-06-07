@@ -16,19 +16,19 @@ function getInfo(query) {
     connection.query(query, function (error, results) {
         if (error) throw error;
         console.table(results);
-        runSearch();
         // results.forEach(element => {
-        //     console.log(element)
-        // });
-    });
-
+            //     console.log(element)
+            // });
+        });
+        
 }
+    
+    // getInfo("SELECT * FROM department");
+    // getInfo("SELECT * FROM role");
+    // getInfo("SELECT * FROM employee");
+    
 
-getInfo("SELECT * FROM department");
-getInfo("SELECT * FROM role");
-getInfo("SELECT * FROM employee");
-
-connection.end();
+    runSearch();
 
 function runSearch() {
     inquirer
@@ -85,9 +85,15 @@ function runSearch() {
 }
 
 function viwAllEmployees() {
-    return this.connection.query(
-        "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;"
-      );
+    var query = "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department_name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;"
+    connection.query(query, function (err, res) {
+        if (err){
+            throw err
+        } 
+        console.table(res); 
+        return
+    })
+      
 }
 
 function viwAllRoles() {
@@ -107,5 +113,5 @@ function addRole() {}
 function addDepartment() {}
 
 function updateEmployeeRole() {
-    
+
 }
