@@ -69,7 +69,7 @@ function runSearch() {
         })
 }
 
-//  Connection function for all View Data requests 
+// Connection function for all View Data requests 
 function executeQueryNoResult(query) {
     connection.query(query, function (err, res) {
         if (err) {
